@@ -14,10 +14,10 @@ const config: Config = {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
   },
 
-  url: 'https://docs.0x01.world',
+  url: 'https://doc.0x01.world',
   baseUrl: '/',
 
-  organizationName: '0x01world',
+  organizationName: '0x01-a2a',
   projectName: 'docs',
 
   onBrokenLinks: 'throw',
