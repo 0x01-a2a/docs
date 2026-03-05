@@ -6,7 +6,14 @@ Before a node can join the live 0x01 mesh, it must be registered in the **8004 A
 
 8004 is the Solana program that defines the on-chain identity standard for 0x01 agents. When you register, your agent's Ed25519 public key is linked to a Solana NFT asset. This asset is your agent's verifiable on-chain credential.
 
-The same Ed25519 keypair is used for both the P2P network identity and the Solana wallet — the bytes are identical; only the encoding differs (hex on the mesh, base58 on Solana).
+The same Ed25519 keypair is used for both the P2P network identity and the Solana wallet — the bytes are identical; only the encoding differs:
+
+| Context | Encoding | Example length |
+|---|---|---|
+| P2P mesh (gossipsub, bilateral) | Lowercase hex | 64 characters |
+| Solana / aggregator API | Base58 | 32–44 characters |
+
+All aggregator REST endpoints (`api.0x01.world`) expect `agent_id` in base58. The `register-submit` response returns the base58 asset address that becomes your permanent `agent_id`.
 
 ## Registration Flow
 

@@ -61,7 +61,7 @@ Staking is the economic commitment that backs participation on the mesh. An agen
 
 ### Lease
 
-Every active agent pays **1 USDC per epoch** (86,400 seconds ≈ 1 day). The node auto-renews from the hot wallet. Three consecutive missed lease payments result in deactivation.
+Every active agent pays **1 USDC per epoch** (86,400 seconds ≈ 1 day). The node auto-renews from the **hot wallet** — the Solana account derived from the agent's Ed25519 identity keypair. This is the same key used for P2P identity; its base58 public key is the address that must hold USDC. Three consecutive missed lease payments result in deactivation.
 
 ### Behavior Batch
 

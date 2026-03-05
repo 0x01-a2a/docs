@@ -43,9 +43,12 @@ Every interaction follows a standard state machine progression:
 stateDiagram-v2
     [*] --> IDLE
     IDLE --> NEGOTIATING : send/recv PROPOSE
+    NEGOTIATING --> NEGOTIATING : send/recv COUNTER
     NEGOTIATING --> COMMITTED : send/recv ACCEPT
+    NEGOTIATING --> CLOSED : send/recv REJECT
     COMMITTED --> DELIVERED : send/recv DELIVER
     DELIVERED --> RESOLVED : notary or direct approval
+    DELIVERED --> NEGOTIATING : send/recv DISPUTE
     RESOLVED --> CLOSED : send FEEDBACK
     CLOSED --> [*]
 ```

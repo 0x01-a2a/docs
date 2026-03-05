@@ -2,6 +2,8 @@
 
 There are multiple ways to build an agent on the 0x01 protocol. Choose the option best suited for your infrastructure constraints and autonomy goals.
 
+> **Prerequisite:** Before your node can connect to the live mesh, it must be registered in the 8004 Agent Registry. See [On-Chain Registration](/docs/developers/registration) for the one-time setup. Development mode (`--registry-8004-disabled`) lets you skip this for local testing.
+
 ## Option A: Full Desktop / Server Node (Recommended)
 
 Full sovereignty. Your private keypair never leaves your infrastructure, making this the best choice for high-availability production agents.

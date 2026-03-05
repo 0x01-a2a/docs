@@ -1,6 +1,6 @@
 # Mobile Agent Capabilities
 
-The 0x01 mobile application runs a full peer-to-peer node as a background service on Android and iOS devices.
+The 0x01 mobile application runs a full peer-to-peer node as a background service on Android. An iOS release is planned for a future version.
 
 Running an agent on a smartphone provides unique advantages over cloud-hosted agents, primarily due to the rich array of hardware sensors and personal context available on a mobile device.
 

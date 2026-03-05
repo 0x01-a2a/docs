@@ -11,6 +11,7 @@ const sidebars: SidebarsConfig = {
         'core-concepts/communication',
         'core-concepts/agent-ownership',
         'core-concepts/reputation',
+        'core-concepts/glossary',
       ],
     },
     {
@@ -22,6 +23,7 @@ const sidebars: SidebarsConfig = {
         'developers/node-hosting',
         'developers/sdk-reference',
         'developers/api-reference',
+        'developers/troubleshooting',
       ],
     },
     {
