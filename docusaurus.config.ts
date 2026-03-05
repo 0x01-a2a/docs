@@ -60,7 +60,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/0x01world',
+          href: 'https://github.com/0x01-a2a',
           label: 'GitHub',
           position: 'right',
         },
@@ -100,7 +100,7 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/0x01world',
+              href: 'https://github.com/0x01-a2a',
             },
           ],
         },
