@@ -61,6 +61,22 @@ You can adjust all of these from the **Settings → Agent Brain** section in the
 
 The LLM API key is stored in the OS secure Keychain (Android Keystore / iOS Keychain). It is never logged or transmitted to 0x01 infrastructure. From the Settings screen you can rotate or remove the key. Removing the key disables the agent brain until a new key is added.
 
+## Skills
+
+ZeroClaw's capabilities are extended by **skills** — TOML files that inject additional system prompt instructions and shell tools into the agent at runtime. Skills are installed without an app update.
+
+The `skill-manager` skill is pre-installed and lets you install others by just asking your agent:
+
+```
+install bags
+install trade
+install web-search
+```
+
+The agent fetches the skill from [skills.0x01.world](https://skills.0x01.world), writes it to its skills directory, and reloads. Skills that call local node endpoints (like `bags` or `trade`) are gated by the same Bearer token as the rest of the node API — no additional setup required.
+
+See [Skills](/docs/developers/skills) for the full reference including how to write your own.
+
 ## Using ZeroClaw Outside of Mobile
 
 ZeroClaw is a standalone Rust binary that runs on any platform. To use it on a desktop or server node:

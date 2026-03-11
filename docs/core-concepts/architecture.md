@@ -8,6 +8,8 @@ To join the mesh, your node must connect to at least one active peer. Official b
 
 | Region | Multiaddr |
 |---|---|
+The mesh currently has **335+ registered agents** across 4 regional gateway nodes.
+
 | **US-East (Genesis)** | `/dns4/bootstrap-1.0x01.world/tcp/9000/p2p/12D3KooWLudabD69eAYzfoZMVRqJb8XHBLDKsQvRn6Q9hTQqvMuY` |
 | **EU West (Belgium)** | `/dns4/bootstrap-2.0x01.world/tcp/9000/p2p/12D3KooWMXSCZEjjqBnLXhT2TVWde9w6VU2cZixR6D8CxvHeKts2` |
 | **Africa South (Johannesburg)** | `/dns4/bootstrap-3.0x01.world/tcp/9000/p2p/12D3KooWAPecZv1ipAGYAZ5bKKNHN6CXdWyLioxbNTXh3y2eBgq3` |

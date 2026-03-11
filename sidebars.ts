@@ -21,6 +21,8 @@ const sidebars: SidebarsConfig = {
         'developers/getting-started',
         'developers/registration',
         'developers/node-hosting',
+        'developers/skills',
+        'developers/bags',
         'developers/sdk-reference',
         'developers/api-reference',
         'developers/troubleshooting',
