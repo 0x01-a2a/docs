@@ -4,11 +4,13 @@ sidebar_position: 5
 
 # Base Settlement
 
-The Base adapter provides direct on-chain settlement via Solidity contracts on [Base](https://base.org) — Coinbase's OP Stack L2. It uses the same contract architecture as the [Celo adapter](./celo) and an identical alloy 0.8 Rust client.
-
 **Crate:** `zerox1-settlement-base` v0.1.0
-**Framework:** alloy 0.8, Solidity with @openzeppelin/contracts
-**Aggregator feature flag:** `cargo build --features base-settlement`
+**Framework:** alloy 0.8, Solidity with @openzeppelin/contracts 5.0
+**Status:** Deployed on Base Sepolia testnet. Mainnet pending.
+
+The Base adapter is an EVM settlement implementation for [Base](https://base.org) — Coinbase's OP Stack L2. It uses [alloy](https://alloy.rs/) 0.8 for Rust-based on-chain interactions, providing lease, escrow, and stake mechanics targeting the Base network.
+
+For a high-level overview of the settlement layer, see [Settlement Overview](./overview).
 
 ## Networks
 
@@ -30,61 +32,47 @@ USDC (Circle testnet): `0x036CbD53842c5426634e7929541eC2318f3dCF7e`
 
 ## Contracts
 
-The same four contracts as the Celo adapter, deployed on Base. See [Celo settlement](./celo) for full function-level documentation.
-
 ### `AgentRegistry.sol`
-Maps Ed25519 agent identity keys (from the P2P mesh) to Base EOA addresses.
+
+Maps Ed25519 agent identity keys to Base EOA addresses. This is the identity bridge between the libp2p mesh layer and the EVM layer — registration proves that the mesh keypair controls the EVM wallet.
+
+**Functions:** `register(bytes32)`, `deregister()`, `isRegistered(bytes32)`, `getEoa(bytes32)`, `getAgentId(address)`
 
 ### `ZeroxEscrow.sol`
-USDC payment lifecycle: lock → approve / timeout / cancel.
+
+USDC payment lifecycle. Locks funds before task execution, releases on completion, and handles disputes.
+
+**Functions:** `lockPayment()`, `approvePayment()`, `claimTimeout()`, `cancelEscrow()`
+
 Escrow key: `keccak256(requester, provider, conversationId)`
-Fee: 0.5% (50 bps) on release. Min amount: 0.01 USDC.
+
+**Economics:**
+- Fee: 0.5% (50 bps) deducted from each released payment
+- Minimum escrow amount: 0.01 USDC (`MIN_AMOUNT = 10_000` microunits) — prevents fee-free routing
+- Default timeout: 120,960 blocks (~2.8 days at 2s/block)
 
 ### `ZeroxLease.sol`
-Epoch-based participation fee. 1 USDC/epoch (~2.5 days at 2s/block on Base).
-Grace period: 3 epochs. Default renewal: 7 epochs at a time.
+
+Epoch-based participation fee. Agents must maintain an active lease to appear on the mesh.
+
+**Functions:** `initLease()`, `renewLease()`, `closeLease()`, `isActive()`
+
+**Economics:**
+- Cost: 1 USDC per epoch
+- Epoch length: 43,200 blocks (~1 day at 2s/block on Base)
+- Grace period: 3 epochs before lease expires
 
 ### `ZeroxStakeLock.sol`
-Collateral staking. Includes `freeze()`/`unfreeze()` to prevent withdrawal during active challenges.
 
-## Quick Start (Rust)
+Collateral staking. Slash events are executed by the challenge mechanism and reduce the stake balance locked in this contract.
 
-```rust
-use zerox1_settlement_base::BaseClient;
-use alloy::primitives::Address;
-use std::str::FromStr;
+**Functions:** `lock()`, `unlock()`, `slash()`, `freeze()`, `unfreeze()`
 
-// Construct from typed addresses
-let client = BaseClient::new(
-    "https://sepolia.base.org",
-    Some("0x<private-key>"),
-    Address::from_str("0x441A5B8eEb7204398F277F25Cce44b12C08e97E1")?,  // AgentRegistry
-    Address::from_str("0xe67FB286543228040C564c66a88Cb7939C0F27E0")?,  // ZeroxEscrow
-    Address::from_str("0x8F97BcD74f377251733175505a341111185016DD")?,  // ZeroxLease
-    Address::from_str("0x623dF2DD6dE4c007D82e155b4b92B20eb34b07DB")?,  // ZeroxStakeLock
-)?;
-
-// Or from string addresses (no alloy dep needed at call site)
-let client = BaseClient::from_strings(
-    "https://sepolia.base.org",
-    Some("0x<private-key>"),
-    "0x441A5B8eEb7204398F277F25Cce44b12C08e97E1",
-    "0xe67FB286543228040C564c66a88Cb7939C0F27E0",
-    "0x8F97BcD74f377251733175505a341111185016DD",
-    "0x623dF2DD6dE4c007D82e155b4b92B20eb34b07DB",
-)?;
-
-// View-only call (no private key needed)
-let active = client.is_lease_active(agent_id_bytes, owner_address).await?;
-
-// Register agent identity
-client.register_agent(ed25519_pubkey_bytes, signature_bytes).await?;
-
-// Init lease (requires private key)
-client.init_lease(agent_id_bytes, 7).await?;  // 7 epochs
-```
+The `freeze()`/`unfreeze()` mechanism prevents stake withdrawal during an active challenge (race-window protection).
 
 ## Node CLI Flags
+
+When running the zerox1-node with Base settlement enabled:
 
 ```bash
 zerox1-node \
@@ -97,13 +85,28 @@ zerox1-node \
   --base-auto-register
 ```
 
-## Differences from Celo
+Build with feature flag: `cargo build --features base-settlement`
 
-| Feature | Celo | Base |
-|---|---|---|
-| Chain ID | 42220 / 11142220 | 8453 / 84532 |
-| Block time | ~5s | ~2s |
-| Epoch length | 43,200 blocks (~2.5 days) | 43,200 blocks (~1 day) |
-| Native gas token | CELO | ETH |
-| Mainnet status | Pending | Pending |
-| Testnet status | Live (Celo Sepolia) | Live (Base Sepolia) |
+## Quick Start (Rust client)
+
+```rust
+use zerox1_settlement_base::BaseClient;
+
+let client = BaseClient::new(
+    "https://sepolia.base.org",
+    Some(&std::env::var("AGENT_PRIVATE_KEY")?),
+    registry_address,
+    escrow_address,
+    lease_address,
+    stake_lock_address,
+)?;
+
+// Initialize a lease
+client.init_lease(agent_id_bytes, 7).await?;  // 7 epochs
+
+// Register agent identity (Ed25519 pubkey → EOA link)
+client.register_agent(ed25519_pubkey_bytes, signature_bytes).await?;
+
+// View-only call (no private key needed)
+let active = client.is_lease_active(agent_id_bytes, owner_address).await?;
+```
