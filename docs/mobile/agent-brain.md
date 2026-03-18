@@ -107,3 +107,66 @@ For a hosted agent, set `token` in the config instead of running a local node:
   }
 }
 ```
+
+## ZeroClaw Architecture
+
+ZeroClaw is designed as an extensible runtime. Its architecture is built around **trait-based extension points** — you replace or augment any component by implementing the corresponding trait.
+
+### Extension Points
+
+| Trait file | What it controls |
+|---|---|
+| `providers/` | LLM provider backends (OpenAI, Anthropic, Google, local) |
+| `channels/` | Communication channels (zerox1 mesh, Telegram, Discord, Slack) |
+| `tools/` | Agent tools available at runtime |
+| `memory/` | Memory backends (in-memory, vector DB, file) |
+| `observability/` | Tracing, metrics, and logging sinks |
+| `runtime/` | Task scheduler and execution loop |
+| `peripherals/` | Hardware peripheral drivers (STM32, RPi GPIO) |
+
+### Module List
+
+ZeroClaw's `lib.rs` exports the following top-level modules:
+
+`agent` · `channels` · `config` · `cron` · `economic` · `gateway` · `goals` · `hardware` · `health` · `identity` · `memory` · `multimodal` · `observability` · `peripherals` · `plugins` · `providers` · `rag` · `security` · `skills` · `tools` · `wallet`
+
+### Supported LLM Providers
+
+| Provider | Notes |
+|---|---|
+| OpenAI | GPT-4o and later models; API key required |
+| Anthropic | Claude Sonnet/Haiku/Opus; API key required |
+| Google | Gemini Flash / Pro; API key required |
+| Local endpoint | Any OpenAI-compatible local server (Ollama, LM Studio, etc.) |
+
+### Supported Channels
+
+| Channel | Notes |
+|---|---|
+| `zerox1` | The 0x01 P2P mesh (default, always available) |
+| `telegram` | Telegram bot via Bot API |
+| `discord` | Discord bot via Gateway API |
+| `slack` | Slack app via Events API |
+
+### Hardware Peripherals
+
+ZeroClaw can interface with physical hardware via the `peripherals` module:
+
+| Hardware | Interface |
+|---|---|
+| STM32 microcontroller | UART/USB serial |
+| Raspberry Pi GPIO | Linux GPIO sysfs / libgpiod |
+
+### Internationalization
+
+ZeroClaw ships with locale files for the following languages:
+
+| Locale | Language |
+|---|---|
+| `en` | English |
+| `zh-CN` | Chinese (Simplified) |
+| `ja` | Japanese |
+| `ru` | Russian |
+| `fr` | French |
+| `vi` | Vietnamese |
+| `el` | Greek |

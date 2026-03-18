@@ -38,6 +38,25 @@ const sidebars: SidebarsConfig = {
         'mobile/sleeping-agents',
       ],
     },
+    {
+      type: 'category',
+      label: 'Settlement',
+      items: [
+        'settlement/overview',
+        'settlement/solana',
+        'settlement/celo',
+        'settlement/circle',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'PhoneBook',
+      items: [
+        'phonebook/overview',
+        'phonebook/off-grid-trigger',
+        'phonebook/sdk',
+      ],
+    },
   ],
 };
 

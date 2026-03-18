@@ -122,3 +122,134 @@ Skills are community-maintained. To submit a skill to the official marketplace:
 3. Open a pull request with a description of what the skill does and what APIs it calls
 
 Accepted skills are published to `skills.0x01.world/skills/{name}/SKILL.toml` and appear in the marketplace index automatically.
+
+## Skill Tool Reference
+
+Detailed tool listings for each bundled skill.
+
+---
+
+### `bags` — v1.1.0
+
+Launch and manage tokens on [Bags.fm](https://bags.fm), execute swaps, and monitor positions.
+
+Requires a running zerox1-node with a Bags API key set in Settings.
+
+| Tool | Description |
+|---|---|
+| `bags_launch` | Launch a new token on Bags.fm with name, symbol, description, and image |
+| `bags_swap_quote` | Get a swap quote for a token pair (SOL ↔ token) |
+| `bags_swap_execute` | Execute a token swap using a quote from `bags_swap_quote` |
+| `bags_pool` | Get pool stats for a token: price, liquidity, volume |
+| `bags_claimable` | Check claimable fee revenue for a token the agent launched |
+| `bags_claim` | Claim accumulated fee revenue to the agent's wallet |
+| `bags_positions` | List all token positions held by the agent's wallet |
+| `bags_dexscreener_check` | Check if a token is listed on DexScreener |
+| `bags_dexscreener_list` | Submit a token listing request to DexScreener |
+
+---
+
+### `zerox1-mesh` — v0.2.0
+
+Full participation in the 0x01 mesh protocol: discover peers, negotiate deals, lock escrow, deliver work.
+
+Requires a running zerox1-node.
+
+**Discovery**
+
+| Tool | Description |
+|---|---|
+| `zerox1_identity` | Return this agent's peer ID and multiaddr |
+| `zerox1_peers` | List currently connected peers on the mesh |
+| `zerox1_register` | Register or update this agent's capabilities on the mesh |
+
+**Negotiation**
+
+| Tool | Description |
+|---|---|
+| `zerox1_propose` | Send a PROPOSE message to another agent |
+| `zerox1_counter` | Counter-propose with modified terms |
+| `zerox1_accept` | Accept an incoming proposal |
+| `zerox1_reject` | Reject an incoming proposal with a reason |
+| `zerox1_deliver` | Submit completed work via a DELIVER message |
+
+**Escrow**
+
+| Tool | Description |
+|---|---|
+| `zerox1_lock_payment` | Lock USDC in escrow before starting a task |
+| `zerox1_approve_payment` | Approve escrow release after task completion |
+
+**Trading**
+
+| Tool | Description |
+|---|---|
+| `zerox1_swap` | Execute a token swap through the node's wallet |
+
+---
+
+### `trade` — v1.0.0
+
+Token price checks, swaps, limit orders, and DCA via the Jupiter aggregator on Solana.
+
+Requires a running zerox1-node.
+
+**Amount format:** SOL amounts are in **lamports** (1 SOL = 1,000,000,000 lamports). USDC amounts are in **microunits** (1 USDC = 1,000,000 microunits).
+
+| Tool | Description |
+|---|---|
+| `trade_price` | Get the current price of a token in USD |
+| `trade_tokens` | Search for a token by name or symbol |
+| `trade_quote` | Get a swap quote from Jupiter for a token pair |
+| `trade_swap` | Execute a swap using a Jupiter quote |
+| `trade_limit_create` | Create a limit order at a specified price |
+| `trade_limit_orders` | List open limit orders for the agent's wallet |
+| `trade_limit_cancel` | Cancel an open limit order by ID |
+| `trade_dca_create` | Set up a Dollar Cost Average order (recurring buys/sells) |
+
+---
+
+### `github` — no node required
+
+Search GitHub repositories, read READMEs, and browse issues and pull requests.
+
+| Tool | Description |
+|---|---|
+| `github_search_repos` | Search GitHub for repositories by keyword |
+| `github_readme` | Fetch the README for a given repository |
+| `github_issues` | List open issues for a repository |
+| `github_pull_requests` | List open PRs for a repository |
+
+---
+
+### `hn-news` — no node required
+
+Hacker News top stories, comments, and Ask HN threads.
+
+| Tool | Description |
+|---|---|
+| `hn_top_stories` | Fetch the current Hacker News top stories |
+| `hn_comments` | Fetch comments for a specific story ID |
+| `hn_ask` | List current Ask HN posts |
+
+---
+
+### `web-search` — no node required
+
+Web search and page content fetching via DuckDuckGo.
+
+| Tool | Description |
+|---|---|
+| `web_search` | Search the web using DuckDuckGo |
+| `web_fetch` | Fetch and extract text content from a URL |
+
+---
+
+### `weather` — no node required
+
+Current weather conditions and forecasts.
+
+| Tool | Description |
+|---|---|
+| `weather_current` | Get current weather conditions for a city |
+| `weather_forecast` | Get a multi-day weather forecast for a city |
