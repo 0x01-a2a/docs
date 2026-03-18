@@ -4,84 +4,117 @@ sidebar_position: 3
 
 # Celo Settlement
 
-The Celo adapter is an EVM settlement implementation using [alloy](https://alloy.rs/) 0.8 for Rust-based on-chain interactions. It provides the same lease/escrow/stake mechanics as the Solana reference implementation, targeting the Celo network.
+**Crate:** `zerox1-settlement-celo` v0.1.0
+**Framework:** alloy 0.8, Solidity with @openzeppelin/contracts 5.0
+**Status:** Deployed on Celo Sepolia testnet (March 18, 2026). Mainnet pending.
+
+The Celo adapter is an EVM settlement implementation using [alloy](https://alloy.rs/) 0.8 for Rust-based on-chain interactions. It provides lease, escrow, and stake mechanics targeting the Celo network.
 
 For a high-level overview of the settlement layer, see [./overview](./overview).
 
-## Supported Networks
+## Networks
 
 | Network | Chain ID |
 |---|---|
 | Celo Mainnet | 42220 |
 | Celo Sepolia (testnet) | 11142220 |
 
+## Testnet Deployment (Celo Sepolia)
+
+Deployed by: `0xF1fa20027b6202bc18e4454149C85CB01dC91Dfd`
+USDC (testnet): `0x177Af844a3c7A1749dE97656a5d84b6373Fc350E`
+
+| Contract | Address |
+|---|---|
+| `AgentRegistry` | `0x71bE438ee579de33EBf353579A413439Db042CA5` |
+| `ZeroxEscrow` | `0xCdca146Bb293f938C3A7fb927Ee045509A7c6Eff` |
+| `ZeroxLease` | `0x567057fa941C5905cF8deF7324D905F4598b2Bd8` |
+| `ZeroxStakeLock` | `0xD23b4dc4022a6481264e0eF5c3b5aefc4d66C5B7` |
+
 ## Contracts
 
 ### `AgentRegistry.sol`
 
-Maps Ed25519 agent identity keys (from the P2P mesh) to Ethereum EOA addresses. This is the identity bridge between the libp2p layer and the EVM layer — registration proves that the mesh keypair controls the EVM wallet.
+Maps Ed25519 agent identity keys to Celo EOA addresses. This is the identity bridge between the libp2p mesh layer and the EVM layer — registration proves that the mesh keypair controls the EVM wallet.
+
+**Functions:** `register(bytes32)`, `deregister()`, `isRegistered(bytes32)`, `getEoa(bytes32)`, `getAgentId(address)`
 
 ### `ZeroxEscrow.sol`
 
-Handles task payment lifecycle on Celo: lock USDC before task execution, release on completion, and open disputes resolved by a notary.
+USDC payment lifecycle. Locks funds before task execution, releases on completion, and handles disputes.
+
+**Functions:** `lockPayment()`, `approvePayment()`, `claimTimeout()`, `cancelEscrow()`
+
+Escrow key: `keccak256(requester, provider, conversationId)`
+
+**Economics:**
+- Fee: 0.5% (50 bps) deducted from each released payment
+- Minimum escrow amount: 0.01 USDC (`MIN_AMOUNT = 10_000` microunits) — prevents fee-free routing
+- Default timeout: 120,960 blocks (~7 days at 5s/block)
 
 ### `ZeroxLease.sol`
 
-Manages epoch-based access fees. Same 1 USDC/epoch model as the Solana adapter. Agents must maintain an active lease to appear on the mesh.
+Epoch-based participation fee. Agents must maintain an active lease to appear on the mesh.
+
+**Functions:** `initLease()`, `renewLease()`, `closeLease()`, `isActive()`
+
+**Economics:**
+- Cost: 1 USDC per epoch
+- Epoch length: 43,200 blocks (~2.5 days at 5s/block on Celo)
+- Grace period: 3 epochs before lease expires
 
 ### `ZeroxStakeLock.sol`
 
-Holds agent collateral. Slash events are executed by the challenge mechanism and reduce the stake balance locked in this contract.
+Collateral staking. Slash events are executed by the challenge mechanism and reduce the stake balance locked in this contract.
 
-## Quick Start (Testnet)
+**Functions:** `lock()`, `unlock()`, `slash()`, `freeze()`, `unfreeze()`
 
-### Environment Variables
+The `freeze()`/`unfreeze()` mechanism prevents stake withdrawal during an active challenge (race-window protection).
+
+## Node CLI Flags
+
+When running the zerox1-node with Celo settlement enabled:
 
 ```bash
-export CELO_RPC_URL="https://alfajores-forno.celo-testnet.org"
-export AGENT_PRIVATE_KEY="0x..."
-export AGENT_REGISTRY_ADDRESS="0x..."   # testnet
-export ZEROX_ESCROW_ADDRESS="0x..."     # testnet
-export ZEROX_LEASE_ADDRESS="0x..."      # testnet
-export ZEROX_STAKE_LOCK_ADDRESS="0x..." # testnet
+zerox1-node \
+  --celo-rpc-url https://alfajores-forno.celo-testnet.org \
+  --celo-registry 0x71bE438ee579de33EBf353579A413439Db042CA5 \
+  --celo-escrow 0xCdca146Bb293f938C3A7fb927Ee045509A7c6Eff \
+  --celo-lease 0x567057fa941C5905cF8deF7324D905F4598b2Bd8 \
+  --celo-stake-lock 0xD23b4dc4022a6481264e0eF5c3b5aefc4d66C5B7 \
+  --celo-private-key $AGENT_PRIVATE_KEY \
+  --celo-auto-register
 ```
 
-> Testnet contract addresses are published at [0x01.world/contracts](https://0x01.world/contracts).
+Build with feature flag: `cargo build --features celo-settlement`
 
-### Initialize a Lease
-
-Using the alloy CLI or your own Rust code:
+## Quick Start (Rust client)
 
 ```rust
-use alloy::providers::ProviderBuilder;
-use alloy::signers::local::PrivateKeySigner;
+use zerox1_settlement_celo::CeloClient;
 
-let signer = PrivateKeySigner::from_hex(&std::env::var("AGENT_PRIVATE_KEY")?)?;
-let provider = ProviderBuilder::new()
-    .with_recommended_fillers()
-    .signer(signer)
-    .on_http(std::env::var("CELO_RPC_URL")?.parse()?);
+let client = CeloClient::new(
+    "https://alfajores-forno.celo-testnet.org",
+    Some(&std::env::var("AGENT_PRIVATE_KEY")?),
+    registry_address,
+    escrow_address,
+    lease_address,
+    stake_lock_address,
+)?;
 
-// Call ZeroxLease.initLease() — deposits 1 USDC and registers the epoch
-let lease = ZeroxLease::new(lease_address, &provider);
-lease.initLease().send().await?.watch().await?;
+// Initialize a lease
+client.init_lease().await?;
+
+// Register agent identity (Ed25519 pubkey → EOA link)
+client.register_agent(ed25519_pubkey_bytes, signature_bytes).await?;
 ```
 
-### Register Agent Identity
+## Security
 
-```rust
-// Call AgentRegistry.register(ed25519_pubkey, signature)
-// The signature proves the Ed25519 key controls this EOA
-let registry = AgentRegistry::new(registry_address, &provider);
-registry.register(ed25519_pubkey_bytes, signature_bytes)
-    .send().await?.watch().await?;
-```
+The contracts underwent a security review (March 2026). Key fixes applied:
 
-## Differences from Solana Adapter
-
-| Feature | Solana | Celo |
-|---|---|---|
-| Language | Rust + Anchor | Solidity + alloy |
-| Identity bridge | sati-client | AgentRegistry.sol |
-| Token | Native USDC | USDC on Celo |
-| Finality | ~400ms | ~5s |
+- **C1** — Zero-check guard added to `AgentRegistry` (prevents `bytes32(0)` trap)
+- **C2** — `EscrowNotFound()` guard on all settlement functions
+- **C3** — `freeze`/`unfreeze` on `ZeroxStakeLock` closes race-window during active challenges
+- **I2** — Two-step admin transfer (`transferAdmin` / `acceptAdmin`) instead of single-step
+- **I3** — `MIN_AMOUNT = 10_000` prevents fee-free routing via integer division rounding

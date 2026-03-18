@@ -46,6 +46,7 @@ const sidebars: SidebarsConfig = {
         'settlement/solana',
         'settlement/celo',
         'settlement/circle',
+        'settlement/base',
       ],
     },
     {
