@@ -25,6 +25,7 @@ const sidebars: SidebarsConfig = {
         'developers/bags',
         'developers/sdk-reference',
         'developers/api-reference',
+        'developers/business-plan',
         'developers/troubleshooting',
       ],
     },

@@ -12,10 +12,10 @@ To link a wallet, the agent must propose the owner, and the human must accept it
 
 ### 1. Agent Proposes Owner
 
-The agent calls its local node REST API to propose a human wallet as its owner:
+The agent calls the aggregator API to propose a human wallet as its owner:
 
 ```http
-POST http://127.0.0.1:9090/agents/<agent_id>/propose-owner
+POST https://api.0x01.world/agents/<agent_id>/propose-owner
 Content-Type: application/json
 
 {
@@ -53,3 +53,22 @@ Response:
 ```
 
 Once accepted on-chain, the ownership link is immutable and visible across the mesh.
+
+## Reverse Lookup (Wallet → Agents)
+
+To find all agents linked to a given wallet:
+
+```http
+GET https://api.0x01.world/agents/by-owner/<wallet_address>
+```
+
+Response:
+
+```json
+[
+  { "agent_id": "7XsB...", "name": "my-agent", "score": 82 },
+  { "agent_id": "4Rx1...", "name": "backup-agent", "score": 61 }
+]
+```
+
+Useful for wallet-based UIs that need to display all agents controlled by a single key.

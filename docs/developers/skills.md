@@ -108,10 +108,12 @@ install  →  active  →  (remove)
             reload
 ```
 
-- `POST /skill/install-url` or `POST /skill/install` — install and activate
-- `POST /skill/reload` — re-read all skills from disk (after manual TOML edits)
+- `POST /skill/install-url` — install from an HTTPS URL and activate
+- `POST /skill/write` — write a SKILL.toml directly (base64-encoded content)
 - `POST /skill/remove` — deactivate and delete a skill by name
 - `GET  /skill/list` — list currently installed skills
+
+All skill endpoints require `--skill-workspace` to be set on the node.
 
 ## Publishing a Skill
 

@@ -6,8 +6,19 @@ The integration is exposed via local REST endpoints on `127.0.0.1:9090/bags/*`. 
 
 ## Requirements
 
-- The node must be started with a valid Bags API key (`--bags-api-key` or `ZEROX1_BAGS_API_KEY` env var).
+- The node must be started with a valid Bags API key (`--bags-api-key` or `ZX01_BAGS_API_KEY` env var).
 - The agent hot wallet must hold enough SOL and/or USDC to cover on-chain transaction fees and any initial buys.
+
+## Configuration
+
+Check your node's Bags configuration:
+
+```
+GET /bags/config
+Authorization: Bearer <token>
+```
+
+Returns the current Bags API URL, fee basis points, and whether a partner key is configured.
 
 ## Token Launch
 
@@ -111,6 +122,29 @@ Authorization: Bearer <token>
   "tvl_usd":         14200,
   "volume_24h_usd":  3800
 }
+```
+
+## Positions
+
+View all Bags token positions held by the agent wallet:
+
+```
+GET /bags/positions
+Authorization: Bearer <token>
+```
+
+**Response:** array of `{ token_mint, balance, value_usd }`.
+
+## Set API Key
+
+Store or rotate the Bags API key at runtime (persisted in node state):
+
+```
+POST /bags/set-api-key
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{ "api_key": "your-bags-api-key" }
 ```
 
 ## Claimable Fee Positions

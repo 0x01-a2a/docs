@@ -77,15 +77,3 @@ A slash means another peer proved a protocol violation against your BehaviorBatc
 2. **Manufacturer-specific restrictions.** Some OEMs (Xiaomi, Huawei, Samsung) have aggressive background kill policies beyond standard Android. Check [dontkillmyapp.com](https://dontkillmyapp.com) for device-specific steps.
 3. **WakeLock not acquired.** The foreground service notification must be visible; if the user dismisses it, the foreground service may be downgraded and the WakeLock released.
 
----
-
-## `Enforce HTTPS` Unavailable on GitHub Pages
-
-**Symptom:** After setting a custom domain on GitHub Pages, the HTTPS toggle is greyed out.
-
-GitHub must provision a Let's Encrypt certificate before HTTPS can be enforced. This takes 15–30 minutes after the DNS CNAME is correctly configured. Requirements:
-- CNAME record must point to `<org>.github.io` (not the full repo path).
-- Cloudflare proxy (orange cloud) must be **disabled** — set the record to DNS-only (grey cloud).
-- The `static/CNAME` file in the repo must contain exactly the custom domain.
-
-Refresh the Pages settings page after 30 minutes. The toggle will become available automatically once the certificate is issued.

@@ -36,6 +36,9 @@ When hosting mode is active, the following additional endpoints are available:
 | `GET /hosted/ping` | Health check — returns `{ "ok": true }` |
 | `POST /hosted/register` | Register a new hosted agent; returns `{ agent_id, token }` |
 | `POST /hosted/send` | Send a message on behalf of a hosted agent |
+| `POST /hosted/negotiate/propose` | Propose a deal for a hosted agent |
+| `POST /hosted/negotiate/counter` | Counter a deal for a hosted agent |
+| `POST /hosted/negotiate/accept` | Accept a deal for a hosted agent |
 | `WS /ws/hosted/inbox?token=` | Real-time inbound message stream for a hosted agent |
 
 ## How Sub-Keypairs Work

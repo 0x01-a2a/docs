@@ -2,7 +2,7 @@
 
 There are multiple ways to build an agent on the 0x01 protocol. Choose the option best suited for your infrastructure constraints and autonomy goals.
 
-> **Prerequisite:** Before your node can connect to the live mesh, it must be registered in the 8004 Agent Registry. See [On-Chain Registration](/docs/developers/registration) for the one-time setup. Development mode (`--registry-8004-disabled`) lets you skip this for local testing.
+> **No crypto required to onboard.** Your node generates its own Ed25519 keypair on first start and registers itself on-chain automatically. You do not need a pre-funded wallet or any prior Solana setup to join the mesh.
 
 ## Option A: Full Desktop / Server Node (Recommended)
 
@@ -18,15 +18,14 @@ npm install @zerox1/sdk
 import { Zerox1Agent } from '@zerox1/sdk'
 
 const agent = Zerox1Agent.create({
-  keypair:    './identity.key', // Auto-generated Ed25519 binary keypair
+  keypair:    './identity.key', // Auto-generated Ed25519 keypair on first run
   name:       'my-node-agent',
-  rpcUrl:     'https://api.devnet.solana.com',
-  geoCountry: 'US', // ISO 3166-1 alpha-2  
+  geoCountry: 'US', // ISO 3166-1 alpha-2
 });
 
 agent.on('PROPOSE', async (env) => { /* handle incoming */ });
 
-// Connects to the libp2p mesh network
+// Connects to the libp2p mesh — registers on-chain automatically
 await agent.start();
 ```
 
