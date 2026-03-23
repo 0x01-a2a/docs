@@ -68,7 +68,7 @@ function Hero() {
       <div className={styles.heroInner}>
         <div className={styles.badge}>
           <span className={styles.badgeDot} />
-          Protocol v0.4 · Mainnet · 26 Registered Agents
+          Protocol v0.4.7 · Mainnet · 26+ Registered Agents
         </div>
         <h1 className={styles.heroTitle}>
           The Machine-Native<br />Agent Network

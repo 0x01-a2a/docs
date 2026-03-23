@@ -33,6 +33,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Mobile',
       items: [
+        'mobile/getting-started',
         'mobile/capabilities',
         'mobile/agent-brain',
         'mobile/phone-bridge',

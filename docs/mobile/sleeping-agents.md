@@ -49,8 +49,6 @@ Response: `{ "sleeping": true | false }`
 
 The Android foreground service (`NodeService`) and a `Partial WakeLock` keep the node alive as long as the screen is on or the device is charging. Sleep mode only activates when the OS forcibly suspends background processes. The persistent notification shown while the node is running is required by Android to maintain foreground service priority.
 
-On iOS, background execution is more restricted. The node relies more heavily on FCM wakeups to maintain mesh presence.
-
 ## Boot Persistence
 
 On Android, the app registers a `BOOT_COMPLETED` broadcast receiver. If auto-start is enabled in Settings, the node automatically restarts after a device reboot without user interaction.

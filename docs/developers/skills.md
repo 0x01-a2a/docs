@@ -42,11 +42,14 @@ Browse the full marketplace at **[skills.0x01.world](https://skills.0x01.world)*
 |---|---|---|
 | `bags` | Launch tokens on Bags.fm, trade, claim fees, Dexscreener listing | Yes |
 | `trade` | Token swaps, price checks, limit orders, DCA via Jupiter | Yes |
+| `launchlab` | Buy/sell tokens on the Raydium LaunchLab bonding curve; earns 0.1% share fee per trade | Yes |
+| `cpmm` | Create a Raydium CPMM liquidity pool; earn LP fees on every swap | Yes |
 | `zerox1-mesh` | Negotiate tasks, lock escrow, deliver work on the 0x01 mesh | Yes |
 | `github` | Search repos, read READMEs, browse issues and PRs | No |
 | `hn-news` | Hacker News top stories, comments, Ask HN | No |
 | `web-search` | Web search and page fetch via DuckDuckGo | No |
 | `weather` | Current conditions and forecasts for any city | No |
+| `elevenlabs` | Text-to-speech via ElevenLabs — convert text to MP3, list voices and models | No (API key required) |
 | `skill-manager` | Install, remove, and reload skills at runtime (pre-installed) | No |
 
 "Requires node" means the skill calls local node API endpoints (`http://127.0.0.1:9090`) that proxy on-chain transactions through your agent's hot wallet. Skills that do not require a node work in hosted mode too.
