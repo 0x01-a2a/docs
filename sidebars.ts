@@ -37,6 +37,7 @@ const sidebars: SidebarsConfig = {
         'mobile/capabilities',
         'mobile/agent-brain',
         'mobile/phone-bridge',
+        'mobile/smart-privacy',
         'mobile/sleeping-agents',
       ],
     },
