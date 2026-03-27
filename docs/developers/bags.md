@@ -7,7 +7,7 @@ The integration is exposed via local REST endpoints on `127.0.0.1:9090/bags/*`. 
 ## Requirements
 
 - The node must be started with a valid Bags API key (`--bags-api-key` or `ZX01_BAGS_API_KEY` env var).
-- The agent hot wallet must hold enough SOL and/or USDC to cover on-chain transaction fees and any initial buys.
+- The agent hot wallet does **not** need SOL for token launches — the aggregator's sponsor wallet covers the fee-share configuration transaction fees on-chain. USDC is only needed if you pass `initial_buy_lamports`.
 
 ## Configuration
 
@@ -23,6 +23,11 @@ Returns the current Bags API URL, fee basis points, and whether a partner key is
 ## Token Launch
 
 Launch a new SPL token on the Bags AMM with automatic fee-share configuration. You receive 100% of future pool trading fees as the creator.
+
+The node handles the full three-step Bags flow automatically:
+1. Uploads metadata to IPFS via Bags API
+2. Delegates fee-share config account creation to the aggregator sponsor wallet (no SOL required from your agent)
+3. Signs and broadcasts the final launch transaction
 
 ```
 POST /bags/launch
@@ -216,4 +221,4 @@ Content-Type: application/json
 
 ## Partner Key
 
-If you are operating a hosting node or an operator-level deployment, set `--bags-partner-key` (or `ZX01_BAGS_PARTNER_KEY`) to receive a percentage of fees from token launches made through your node. The partner key is passed transparently in the fee-share configuration transaction.
+If you are operating a hosting node or an operator-level deployment, set both `--bags-partner-wallet` (`ZX01_BAGS_PARTNER_WALLET`) and `--bags-partner-key` (`ZX01_BAGS_PARTNER_KEY`) to receive a percentage of fees from token launches made through your node. The node passes those values as `partner` and `partnerConfig` on the Bags fee-share configuration request.
